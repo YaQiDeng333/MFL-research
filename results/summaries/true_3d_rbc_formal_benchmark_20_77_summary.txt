@@ -20,4 +20,3 @@ test_er_like_profile_error: 0.340544
 test_projected_mask_iou_dice: 0.750650, 0.847727
 test_max_depth_error_m: 0.000800231
 test_volume_proxy_rel_error: 0.576456
-Boundary: this is a formal benchmark candidate rerun, not a baseline replacement.

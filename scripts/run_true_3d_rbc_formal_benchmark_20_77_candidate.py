@@ -311,7 +311,6 @@ def run(args: argparse.Namespace) -> int:
                 f"test_projected_mask_iou_dice: {selected_test['projected_mask_iou_mean']:.6f}, {selected_test['projected_mask_dice_mean']:.6f}",
                 f"test_max_depth_error_m: {selected_test['max_depth_error_m_mean']:.9f}",
                 f"test_volume_proxy_rel_error: {selected_test['volume_proxy_rel_error_mean']:.6f}",
-                "Boundary: this is a formal benchmark candidate rerun, not a baseline replacement.",
             ]
         )
         + "\n",

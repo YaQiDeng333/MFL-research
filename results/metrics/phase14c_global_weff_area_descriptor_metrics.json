@@ -1,6 +1,5 @@
 {
   "boundary": {
-    "bz_only": false,
     "comsol_run": false,
     "current_baseline_update": false,
     "old_v3_test_used_for_training_or_selection": false,

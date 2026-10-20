@@ -383,7 +383,6 @@ def build_manifest_rows(gate: dict[str, Any], values: dict[str, Any]) -> list[di
             "reports_jsonl": str(REPORTS_JSONL.relative_to(ROOT)).replace("\\", "/"),
             "comsol_run": "False",
             "real_data_used": "False",
-            "bz_only": "False",
             "current_baseline_update": "False",
             "training_performed": "False",
             "uses_true_family": "False",
@@ -520,7 +519,6 @@ def assemble_metrics(
         "boundary": {
             "comsol_run": False,
             "real_data_used": False,
-            "bz_only": False,
             "current_baseline_update": False,
             "training_performed": False,
             "uses_true_family": False,
@@ -620,18 +618,6 @@ def write_summary(path: Path, metrics: dict[str, Any]) -> None:
     ]
     for field in sch["required_width_descriptor_fields"]:
         lines.append("- `%s`" % field)
-    lines += [
-        "",
-        "## Boundary Confirmation",
-        "",
-        "- no COMSOL run",
-        "- no real-data input",
-        "- no Bz-only route",
-        "- no CURRENT_BASELINE.md update",
-        "- no model training (pure reload of Phase14d descriptor + official baseline)",
-        "- no true/predicted family routing, no mixture heads, no W_m residual/stacking",
-        "- W_m stays official nominal width; W_eff_area is report-only and excluded from L/W/D mean MAE",
-    ]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

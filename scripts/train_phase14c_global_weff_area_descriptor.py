@@ -293,7 +293,6 @@ def build_manifest_rows(gate: dict[str, Any], summary_values: dict[str, Any]) ->
             "final_eval_split": "original_v3_240_test",
             "comsol_run": "False",
             "real_data_used": "False",
-            "bz_only": "False",
             "current_baseline_update": "False",
             "old_v3_test_used_for_training_or_selection": "False",
             "phase11a_train_side_only": "True",
@@ -372,7 +371,7 @@ def train_and_calibrate(args: argparse.Namespace) -> dict[str, Any]:
     val_mae = mae_mm(y_true_val, pred_val)
     high_test_mae = mae_mm(y_true_test[high_test], pred_test[high_test])
 
-    # --- W_m control head (discrepancy source only; not a baseline restoration) ---
+    # --- W_m control head ---
     w_m_control = fit_global_candidate(
         W_M_CONTROL_CANDIDATE_NAME,
         "W_m",
@@ -495,7 +494,6 @@ def train_and_calibrate(args: argparse.Namespace) -> dict[str, Any]:
         "boundary": {
             "comsol_run": False,
             "real_data_used": False,
-            "bz_only": False,
             "current_baseline_update": False,
             "uses_true_family": False,
             "uses_predicted_family": False,
@@ -642,16 +640,6 @@ def write_summary(path: Path, metrics: dict[str, Any]) -> None:
         "- high-nuisance recall/precision at flag: `%.6f` / `%.6f`"
         % (risk["high_nuisance_recall_at_flag"], risk["high_nuisance_precision_at_flag"]),
         "- effective: `%s` (criteria: %s)" % (risk["effective"], risk["criteria"]),
-        "",
-        "## Boundary Confirmation",
-        "",
-        "- no COMSOL run",
-        "- no real-data input",
-        "- no Bz-only route",
-        "- no CURRENT_BASELINE.md update",
-        "- no true or predicted family routing; no mixture; no W_m residual/stacking",
-        "- W_m remains the official nominal-width output; W_eff_area is report-only",
-        "- conformal calibration and risk-flag threshold use val only; test frozen and final-only",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

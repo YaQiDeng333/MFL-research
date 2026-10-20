@@ -592,7 +592,6 @@ def train_and_evaluate(args: argparse.Namespace) -> dict[str, Any]:
         "phase": "phase11a_ld_targeted_expansion_and_retraining",
         "boundary": {
             "real_data_used": False,
-            "bz_only": False,
             "measurement_redesign": False,
             "sensor_z_changed": False,
             "scan_lines_changed": False,
@@ -678,18 +677,6 @@ def write_summary(path: Path, metrics: dict[str, Any]) -> None:
         f"- old test L/W/D mean MAE: `{final['mean_lwd_mae_mm']:.6f} mm` (change `{delta['mean_lwd_mae_change_mm']:.6f} mm` vs 1.635)",
         f"- Gate 11a verdict: `{gate['verdict']}`",
         f"- baseline-transition audit worth entering: `{gate['baseline_transition_audit_worth_entering']}`",
-        "",
-        "## Boundary Confirmation",
-        "",
-        "- no real-data input",
-        "- no Bz-only route",
-        "- no measurement/hardware/scan redesign",
-        "- no sensor_z/scan lines/x-grid change",
-        "- no shape-label or curvature-label target training",
-        "- no Phase 8c/8d small-sample training",
-        "- no CURRENT_BASELINE.md update",
-        "- no W-targeted expansion or W/L decorrelated Stage 2",
-        "- original v3_240 test split frozen and final-only",
     ]
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")

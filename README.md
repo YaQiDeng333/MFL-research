@@ -4,7 +4,7 @@
 
 输入为缺陷相对于无缺陷状态的漏磁变化 `delta_b = b_defect - b_no_defect`，包含 Bx、By、Bz 三个分量。每个样本有 3 条扫描线、每条 201 个采样点，数组形状为 `(N, 3, 3, 201)`。数据来自 COMSOL 的三维闭合网格实体仿真；RBC-style 几何是工程近似，尚未在真实试样上验证。
 
-这里提供两类独立成果：尺寸模型使用 ExtraTrees；轮廓模型使用 Conv1D 编码器和六参数回归头。原工程名称中的 PINN 不表示这里的全部模型都使用物理约束损失。
+尺寸模型采用 ExtraTrees，轮廓模型采用 Conv1D 编码器和六参数回归头。
 
 ## 已完成成果
 
@@ -18,7 +18,7 @@
 
 尺寸组合模型的 L 来自 12 个 ExtraTrees-600 模型的均值，W/D 来自既有 ExtraTrees-400 模型。2026-10-20 固定模型，在同一批 39 个冻结测试样本上重新提取特征、推理并统一计算三个维度的 MAE；平均误差为三项实算 MAE 的算术平均。L 头使用 210 维信号特征，W/D 使用固定的 141 维重构特征。表中数值是本仓库唯一公开尺寸基准。
 
-W_eff_area 是报告描述符，不替代名义宽度 W，也不纳入 L/W/D 平均误差。轮廓模型的六个参数为 `L_m, W_m, D_m, wLD, wWD, wLW`；后三项是几何形状辅助参数。投影 mask 的分数只反映二维足印，不代表完整三维几何精度。
+轮廓模型的六个参数为 `L_m, W_m, D_m, wLD, wWD, wLW`；后三项是几何形状辅助参数。
 
 尺寸结果经过上述统一重载评估，未重新训练、调参或改变测试划分；轮廓及有效宽度结果保留各自独立的成果作用域。
 
@@ -39,9 +39,9 @@ W_eff_area 是报告描述符，不替代名义宽度 W，也不纳入 L/W/D 平
 | [build_phase17a_composite_reporting_layer.py](scripts/build_phase17a_composite_reporting_layer.py) | L/W/D 组合预测和报告校验 |
 | [train_true_3d_rbc_neural_parameter_gate.py](scripts/train_true_3d_rbc_neural_parameter_gate.py) | 摘出的 Conv1D 模型、训练、预测与指标函数 |
 | [run_true_3d_rbc_formal_benchmark_20_77_candidate.py](scripts/run_true_3d_rbc_formal_benchmark_20_77_candidate.py) | 轮廓基准训练与评估入口 |
-| [export_true_3d_rbc_baseline_inference_artifact.py](scripts/export_true_3d_rbc_baseline_inference_artifact.py) | 按固定 seed=42 协议重新训练、保存并回读验证轮廓 checkpoint；不是简单文件导出 |
+| [export_true_3d_rbc_baseline_inference_artifact.py](scripts/export_true_3d_rbc_baseline_inference_artifact.py) | 按固定 seed=42 协议重训轮廓模型，并保存后回读校验 checkpoint |
 
-`results/metrics/` 保存统一尺寸评估及其他成果的精选指标；其中 Phase 14b JSON 和特征基准 CSV 是保留训练代码使用的历史数值对照，不表示其研究支线纳入公开代码包。`results/manifests/` 保存数据合同与训练扩充样本状态清单；清单已移除本机路径及原始求解细节。
+`results/metrics/` 保存统一尺寸评估和精选指标；`results/manifests/` 保存数据合同与训练扩充样本状态清单。
 
 ## 安装与独立测试
 
@@ -55,11 +55,11 @@ python -m pip install -r requirements.txt
 python -m pytest -q
 ```
 
-测试使用合成小数组和临时文件，覆盖信号特征、训练/验证/测试隔离、宽度计算、区间与风险阈值、报告结构、轮廓模型及相对路径解析。无需 COMSOL、原始数据或已有模型。它们验证代码行为，不替代科研基准复现。
+测试使用合成小数组和临时文件，覆盖信号特征、训练/验证/测试隔离、宽度计算、区间与风险阈值、报告结构、轮廓模型及相对路径解析。
 
 ## 运行研究代码的条件
 
-本仓库可直接阅读代码、查看结果并运行独立测试；**不包含完整训练数据和模型权重，克隆后不能直接复现表中全部指标**。
+复现表中结果需准备以下文件：
 
 | 用途 | 需要另外准备的文件 |
 |---|---|
@@ -67,7 +67,7 @@ python -m pytest -q
 | L 头与有效宽度训练 | v3_240 NPZ，以及 `data/processed/phase11a_ld_targeted_expansion_delta_b.npz`；L 头还读取 Phase 11a 的候选模型对象 |
 | 尺寸组合报告 | `results/models/` 下的 `phase16b_l_head_ensemble_descriptor.joblib`、`phase10a_w_residual_corrected_candidate.joblib`、`phase14d_weff_area_ensemble_descriptor.joblib`，以及对应数据 |
 
-既有 W/D 模型的完整历史训练流程未纳入本次精选包；当前公开代码提供其特征重构与加载预测路径。因此即使补齐数据，仍需对应的官方 W/D 模型才能复现完整尺寸组合报告。旧 `.joblib` 对象还可能要求与原训练一致的软件版本。
+当前公开代码提供既有 W/D 模型的特征重构与加载预测路径；尺寸组合报告使用对应的官方 W/D 模型。旧 `.joblib` 对象可能要求与原训练一致的软件版本。
 
 查看带参数入口的使用方式不会启动训练：
 
@@ -79,5 +79,3 @@ python scripts/export_true_3d_rbc_baseline_inference_artifact.py --help
 ```
 
 补齐文件后，带参数入口可指定输出位置；轮廓基准使用固定结果路径且默认拒绝覆盖已有结果。L 头训练和组合报告入口也使用固定路径，实际运行前应在独立副本中安排输出，避免覆盖随仓库提供的历史证据。
-
-数据登记中的生成脚本、历史阶段编号是来源信息；COMSOL forward generation 属于外部工程。Bz-only、dual-network、旧探测实验和后续研究计划不在本仓库范围内。历史记录中的 `bz_only: false` 是边界字段，不是单轴入口。
