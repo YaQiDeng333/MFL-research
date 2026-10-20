@@ -4,11 +4,26 @@
     "current_baseline_update": false,
     "training_performed": false
   },
+  "evaluation": {
+    "aggregation": "mean of L/W/D MAE calculated from the same sample predictions",
+    "dataset_id": "comsol_true_3d_rbc_imported_watertight_pilot_v3_240",
+    "dataset_npz_sha256": "6cfd6c4dd32c474dbe4843ac520f541123a54a8f0082a94d3e28d0c8cd196817",
+    "model_sha256": {
+      "phase10a_w_residual_corrected_candidate.joblib": "9302eb88fd25f41335799f836c9c5e7b00e27392f8a2929001c29e1881296727",
+      "phase14d_weff_area_ensemble_descriptor.joblib": "f46c8b246b7286c31628e510ec071ab0080fa05b15b15137280d043e0e64cbb6",
+      "phase16b_l_head_ensemble_descriptor.joblib": "a65d387090df644d7fab39a5550ef43e2e3cbd93c36b550832230a2c22244187"
+    },
+    "prediction_evidence": "results/metrics/composite_unified_test_predictions.csv",
+    "sample_count": 39,
+    "split": "test"
+  },
   "gate17a": {
     "checks": {
+      "D_mae_reproduced": true,
       "L_cov80_reproduced": true,
       "L_cov90_reproduced": true,
       "L_mae_reproduced": true,
+      "W_mae_reproduced": true,
       "composite_mean_reproduced": true,
       "reports_39_of_39": true,
       "schema_all_pass": true,
@@ -17,14 +32,16 @@
       "weff_mae_reproduced": true
     },
     "current_baseline_update": false,
-    "rationale": "composite reporting layer reproduces every promoted number bit-exactly",
+    "rationale": "组合报告与同一测试集的逐样本预测一致，指标在数值容差内复现",
     "verdict": "PASS"
   },
   "numbers": {
+    "D_mae_mm": 0.8601579644854588,
     "L_cov80": 0.9743589743589743,
     "L_cov90": 1.0,
-    "L_mae_mm": 1.6262799071882357,
-    "composite_mean_lwd_mm": 1.5150933023960784,
+    "L_mae_mm": 1.6262799071882352,
+    "W_mae_mm": 2.095925210234827,
+    "composite_mean_lwd_mm": 1.527454360636174,
     "weff_flag_count": 10,
     "weff_mae_mm": 1.4443508705553334
   },

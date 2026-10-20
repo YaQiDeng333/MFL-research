@@ -12,12 +12,9 @@
 - risk flag count: `10/39` (ref `10`)
 - flagged MAE `2.169448` vs unflagged `1.194317` mm (delta `+0.975131`)
 
-## Official W_m Preservation
+## 尺寸指标入口
 
-- source: reloaded phase10a official_fit (official Phase6a/9d L/W/D baseline)
-- official test MAE mm: L `2.000523`, W `2.095925`, D `0.860158` (reference L 1.987 / W 2.065 / D 0.854)
-- official W_m reload valid (within 0.10 mm): `True`
-- W_m replaced by W_eff_area: `False`; W_eff_area in L/W/D mean MAE: `False`
+本摘要仅记录 W_eff_area 描述符。完整 L/W/D 尺寸指标统一见 [组合评估记录](../metrics/phase17a_composite_reporting_layer_metrics.json)，不在描述符摘要中另设一套尺寸基准。W_eff_area 不替代 W_m，不参与 L/W/D 平均 MAE。
 
 ## New Report Fields (per sample)
 

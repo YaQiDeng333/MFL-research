@@ -12,15 +12,15 @@
 
 | 成果 | 已记录结果 | 证据 |
 |---|---|---|
-| L/W/D 尺寸组合模型 | 历史发布口径 MAE：1.6263 / 2.065 / 0.854 mm，平均 1.5151 mm | [Phase 16e 记录](results/metrics/phase16e_composite_transition_audit_metrics.json)、[Phase 17a 报告校验](results/metrics/phase17a_composite_reporting_layer_metrics.json) |
+| L/W/D 尺寸组合模型 | MAE：1.626280 / 2.095925 / 0.860158 mm，平均 1.527454 mm | [统一评估记录](results/metrics/phase17a_composite_reporting_layer_metrics.json)、[逐样本预测与误差](results/metrics/composite_unified_test_predictions.csv) |
 | 三维轮廓模型（20.77 / 20.85） | 深度 RMSE 0.387737 mm，投影 mask IoU 0.750650、Dice 0.847727 | [轮廓结果摘要](results/summaries/true_3d_rbc_formal_benchmark_20_77_summary.txt)、[种子结果](results/metrics/true_3d_rbc_formal_benchmark_20_77_seed_summary.csv) |
 | 有效面积宽度 W_eff_area | 测试 MAE 1.444351 mm；80% / 90% 区间覆盖率 0.897436 / 0.948718 | [描述符报告摘要](results/summaries/phase14e_weff_area_reporting_layer_summary.md) |
 
-尺寸组合模型的 L 来自 12 个 ExtraTrees-600 模型的均值，W/D 来自既有 ExtraTrees-400 模型。表中 W/D 是历史基准记录值；通过重构特征重新加载模型得到的 W/D 为 **2.095925 / 0.860158 mm**，见 Phase 16e 的 `official_live_test_mae_mm`。历史平均值 1.5151 mm 使用历史 W/D 数值计算，不能视为三项重新加载结果的平均值。两套特征提取方式有差别，应分别使用。
+尺寸组合模型的 L 来自 12 个 ExtraTrees-600 模型的均值，W/D 来自既有 ExtraTrees-400 模型。2026-10-20 固定模型，在同一批 39 个冻结测试样本上重新提取特征、推理并统一计算三个维度的 MAE；平均误差为三项实算 MAE 的算术平均。L 头使用 210 维信号特征，W/D 使用固定的 141 维重构特征。表中数值是本仓库唯一公开尺寸基准。
 
 W_eff_area 是报告描述符，不替代名义宽度 W，也不纳入 L/W/D 平均误差。轮廓模型的六个参数为 `L_m, W_m, D_m, wLD, wWD, wLW`；后三项是几何形状辅助参数。投影 mask 的分数只反映二维足印，不代表完整三维几何精度。
 
-以上均为已有实验记录，本次发布未重新训练或重算基准。
+尺寸结果经过上述统一重载评估，未重新训练、调参或改变测试划分；轮廓及有效宽度结果保留各自独立的成果作用域。
 
 ## 代码入口
 
@@ -41,7 +41,7 @@ W_eff_area 是报告描述符，不替代名义宽度 W，也不纳入 L/W/D 平
 | [run_true_3d_rbc_formal_benchmark_20_77_candidate.py](scripts/run_true_3d_rbc_formal_benchmark_20_77_candidate.py) | 轮廓基准训练与评估入口 |
 | [export_true_3d_rbc_baseline_inference_artifact.py](scripts/export_true_3d_rbc_baseline_inference_artifact.py) | 按固定 seed=42 协议重新训练、保存并回读验证轮廓 checkpoint；不是简单文件导出 |
 
-`results/metrics/` 保存精选历史指标；其中 Phase 14b JSON 和特征基准 CSV 是保留训练代码使用的历史数值对照，不表示其研究支线纳入公开代码包。`results/manifests/` 保存数据合同与训练扩充样本状态清单；清单已移除本机路径及原始求解细节。
+`results/metrics/` 保存统一尺寸评估及其他成果的精选指标；其中 Phase 14b JSON 和特征基准 CSV 是保留训练代码使用的历史数值对照，不表示其研究支线纳入公开代码包。`results/manifests/` 保存数据合同与训练扩充样本状态清单；清单已移除本机路径及原始求解细节。
 
 ## 安装与独立测试
 
@@ -65,7 +65,7 @@ python -m pytest -q
 |---|---|
 | 轮廓训练与 checkpoint 恢复 | [数据登记](COMSOL_DATA_REGISTRY.md) 指定的 v3_240 NPZ，须匹配 manifest 中的 SHA-256 |
 | L 头与有效宽度训练 | v3_240 NPZ，以及 `data/processed/phase11a_ld_targeted_expansion_delta_b.npz`；L 头还读取 Phase 11a 的候选模型对象 |
-| 尺寸组合报告 | `results/models/` 下的 `phase16b_l_head_ensemble_descriptor.joblib`、`phase10a_w_residual_corrected_candidate.joblib`、`phase11a_ld_targeted_candidate.joblib`、`phase14d_weff_area_ensemble_descriptor.joblib`，以及对应数据 |
+| 尺寸组合报告 | `results/models/` 下的 `phase16b_l_head_ensemble_descriptor.joblib`、`phase10a_w_residual_corrected_candidate.joblib`、`phase14d_weff_area_ensemble_descriptor.joblib`，以及对应数据 |
 
 既有 W/D 模型的完整历史训练流程未纳入本次精选包；当前公开代码提供其特征重构与加载预测路径。因此即使补齐数据，仍需对应的官方 W/D 模型才能复现完整尺寸组合报告。旧 `.joblib` 对象还可能要求与原训练一致的软件版本。
 

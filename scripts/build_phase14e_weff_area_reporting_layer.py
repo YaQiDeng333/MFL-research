@@ -67,8 +67,8 @@ REQUIRED_WIDTH_DESCRIPTOR_FIELDS = [
     "width_descriptor_status",
 ]
 
-OFFICIAL_LWD_REFERENCE_MAE_MM = {"L_m": 1.987, "W_m": 2.065, "D_m": 0.854}
-OFFICIAL_W_M_RECONSTRUCTION_TOL_MM = 0.10
+OFFICIAL_LWD_REFERENCE_MAE_MM = {"L_m": 2.0005228062972233, "W_m": 2.095925210234827, "D_m": 0.8601579644854588}
+OFFICIAL_W_M_RECONSTRUCTION_TOL_MM = 1.0e-9
 
 REPRO_WEFF_MAE_MM = 1.444350870555334
 REPRO_COVERAGE_80 = 0.8974358974358975
@@ -609,7 +609,7 @@ def write_summary(path: Path, metrics: dict[str, Any]) -> None:
         "## Official W_m Preservation",
         "",
         "- source: %s" % off["source"],
-        "- official test MAE mm: L `%.6f`, W `%.6f`, D `%.6f` (reference L 1.987 / W 2.065 / D 0.854)"
+        "- 独立 W/D 来源模型的重载检查（不是完整组合尺寸基准）：L `%.6f`, W `%.6f`, D `%.6f` mm；完整尺寸结果见 phase17a_composite_reporting_layer_metrics.json"
         % (off["official_test_mae_mm"]["L_m"], off["official_test_mae_mm"]["W_m"], off["official_test_mae_mm"]["D_m"]),
         "- official W_m reload valid (within %.2f mm): `%s`" % (off["w_m_reconstruction_tol_mm"], off["official_w_m_reload_valid"]),
         "- W_m replaced by W_eff_area: `%s`; W_eff_area in L/W/D mean MAE: `%s`"

@@ -4,8 +4,8 @@
 Aligns the per-sample reporting layer with the Phase 16e promoted baseline:
 L_m from the 16b 12-member ensemble (point + std + val-calibrated conformal),
 W_m/D_m from the unchanged official fit, W_eff_area report-only descriptor
-fields carried over from Phase 14e. Pure reload + assemble; every promoted
-number must reproduce bit-exactly. No training, no COMSOL.
+fields carried over from Phase 14e. All three MAEs are computed from aligned
+predictions on the same frozen test samples. No training, no COMSOL.
 """
 
 from __future__ import annotations
@@ -30,7 +30,7 @@ for _n in dir(p11):
     if not _n.startswith("_"):
         setattr(_M, _n, getattr(p11, _n))
 
-from load_true_3d_rbc_pilot_dataset import V3_240_DATASET_ID, load_dataset, split_indices  # noqa: E402
+from load_true_3d_rbc_pilot_dataset import V3_240_DATASET_ID, load_dataset, split_indices, sha256_file  # noqa: E402
 from train_phase14a_observable_width_conditioned_models import (  # noqa: E402
     build_high_nuisance_mask,
     check_no_overwrite,
@@ -39,7 +39,7 @@ from train_phase14a_observable_width_conditioned_models import (  # noqa: E402
     json_dumps,
     write_csv,
 )
-from train_phase11a_ld_targeted_retraining import extract_all_141_features  # noqa: E402
+from train_phase11a_ld_targeted_retraining import extract_all_141_features, extract_ld_specific_features  # noqa: E402
 from build_phase14e_weff_area_reporting_layer import (  # noqa: E402
     PHASE10A_OFFICIAL_MODEL,
     PHASE14D_MODEL,
@@ -48,19 +48,21 @@ from build_phase14e_weff_area_reporting_layer import (  # noqa: E402
     official_lwd_predict_m,
     weff_area_descriptor_predict,
 )
-from eval_phase16a_l_upgrade_composite_candidate import PHASE11A_CANDIDATE, mae_mm  # noqa: E402
+from eval_phase16a_l_upgrade_composite_candidate import mae_mm  # noqa: E402
 
 L_ENSEMBLE_JOBLIB = ROOT / "results/models/phase16b_l_head_ensemble_descriptor.joblib"
 METRICS_JSON = ROOT / "results/metrics/phase17a_composite_reporting_layer_metrics.json"
 MANIFEST_CSV = ROOT / "results/manifests/phase17a_composite_reporting_layer_manifest.csv"
 REPORTS_JSONL = ROOT / "results/reports/phase17a_composite_test_reports.jsonl"
 
+PREDICTIONS_CSV = ROOT / "results/metrics/composite_unified_test_predictions.csv"
+
 REPRO = {
     "L_mae_mm": 1.6262799071882357, "L_cov80": 0.9743589743589743, "L_cov90": 1.0,
     "weff_mae_mm": 1.4443508705553338, "weff_cov80": 0.8974358974358975,
     "weff_cov90": 0.9487179487179487, "weff_flag_count": 10,
-    "composite_mean_lwd_mm": 1.5150933023960784,
-    "official_stored": {"W_m": 2.065, "D_m": 0.854},
+    "W_mae_mm": 2.095925210234827, "D_mae_mm": 0.8601579644854588,
+    "composite_mean_lwd_mm": 1.527454360636174,
 }
 TOL = 1.0e-9
 
@@ -79,7 +81,7 @@ def build_report(sid: str, l_mean_m: float, l_std_m: float, l_r80: float, l_r90:
         "status": "COMPATIBLE_REPORTED",
         "report_schema_version": "phase17a_composite_reporting_v2",
         "official_composite_baseline": {
-            "source": "CURRENT_BASELINE dimension-first L/W/D section (Phase 16e)",
+            "source": "unified frozen-test evaluation of fixed L/W/D composite",
             "L_m_pred_mm": float(l_mean_m * mm),
             "L_m_ci80_lower_mm": float((l_mean_m - l_r80) * mm),
             "L_m_ci80_upper_mm": float((l_mean_m + l_r80) * mm),
@@ -126,9 +128,22 @@ def gate17a(n_reports: int, schemas_ok: bool, repro: dict[str, bool]) -> dict[st
     checks.update(repro)
     verdict = "PASS" if all(checks.values()) else "FAIL"
     return {"verdict": verdict, "checks": checks,
-            "rationale": "composite reporting layer reproduces every promoted number bit-exactly"
+            "rationale": "组合报告与同一测试集的逐样本预测一致，指标在数值容差内复现"
             if verdict == "PASS" else "failed: %s" % [k for k, v in checks.items() if not v],
             "current_baseline_update": False}
+
+
+def composite_metrics(prediction_m: np.ndarray, truth_m: np.ndarray) -> dict[str, float]:
+    """从同一组逐样本预测计算三个维度和平均 MAE，不读取历史汇总常量。"""
+    prediction = np.asarray(prediction_m, dtype=np.float64)
+    truth = np.asarray(truth_m, dtype=np.float64)
+    if prediction.shape != truth.shape or prediction.ndim != 2 or prediction.shape[1] != 3 or not len(prediction):
+        raise ValueError("expected matching nonempty (N, 3) predictions and truth")
+    if not np.isfinite(prediction).all() or not np.isfinite(truth).all():
+        raise ValueError("predictions and truth must be finite")
+    errors = np.mean(np.abs(prediction - truth), axis=0) * 1000.0
+    return {"L_mae_mm": float(errors[0]), "W_mae_mm": float(errors[1]),
+            "D_mae_mm": float(errors[2]), "composite_mean_lwd_mm": float(errors.mean())}
 
 
 def main() -> int:
@@ -137,7 +152,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--overwrite", action="store_true")
     args = parser.parse_args()
-    check_no_overwrite([METRICS_JSON, MANIFEST_CSV, REPORTS_JSONL], args.overwrite)
+    check_no_overwrite([METRICS_JSON, MANIFEST_CSV, REPORTS_JSONL, PREDICTIONS_CSV], args.overwrite)
 
     old = load_dataset(V3_240_DATASET_ID)
     splits = split_indices(old)
@@ -145,9 +160,11 @@ def main() -> int:
     y = np.asarray(old.rbc_params, dtype=np.float64)
     sample_ids = np.asarray(old.sample_ids).astype(str)[test_idx]
 
-    # L: 16b ensemble on 11a feature world (cached matrix)
+    # L: recompute the fixed 210-dimensional signal features from the same observations.
     lpack = joblib.load(L_ENSEMBLE_JOBLIB)
-    x_old = np.asarray(joblib.load(PHASE11A_CANDIDATE)["candidate"].x_old, dtype=np.float64)
+    f141, _ = extract_all_141_features(old.delta_b, old.sensor_x)
+    ld_features, _ = extract_ld_specific_features(old.delta_b, old.sensor_x)
+    x_old = np.hstack([f141, ld_features])
     lp = np.vstack([np.asarray(m.predict(x_old[test_idx]), dtype=np.float64) for m in lpack["ensemble_members"]])
     l_mean, l_std = lp.mean(axis=0), np.maximum(lp.std(axis=0), 1e-12)
     l_r80 = float(lpack["plain_conformal_radius_m"]["80"]); l_r90 = float(lpack["plain_conformal_radius_m"]["90"])
@@ -194,9 +211,23 @@ def main() -> int:
         r["schema_validation"] = s
         reports.append(r); schemas.append(s["passed"])
 
-    composite_mean = float((l_mae + REPRO["official_stored"]["W_m"] + REPRO["official_stored"]["D_m"]) / 3.0)
+    prediction_m = np.column_stack([l_mean, off[:, 1:3]])
+    dimension_metrics = composite_metrics(prediction_m, y[test_idx, :3])
+    w_mae, d_mae = dimension_metrics["W_mae_mm"], dimension_metrics["D_mae_mm"]
+    composite_mean = dimension_metrics["composite_mean_lwd_mm"]
+    prediction_rows = []
+    for i, sid in enumerate(sample_ids):
+        row = {"sample_id": str(sid), "split": "test"}
+        for j, axis in enumerate(("L", "W", "D")):
+            row[f"{axis}_true_mm"] = float(y[test_idx[i], j] * 1000.0)
+            row[f"{axis}_pred_mm"] = float(prediction_m[i, j] * 1000.0)
+            row[f"{axis}_absolute_error_mm"] = float(abs(prediction_m[i, j] - y[test_idx[i], j]) * 1000.0)
+        prediction_rows.append(row)
+    write_csv(PREDICTIONS_CSV, prediction_rows)
     repro_checks = {
         "L_mae_reproduced": abs(l_mae - REPRO["L_mae_mm"]) <= TOL,
+        "W_mae_reproduced": abs(w_mae - REPRO["W_mae_mm"]) <= TOL,
+        "D_mae_reproduced": abs(d_mae - REPRO["D_mae_mm"]) <= TOL,
         "L_cov80_reproduced": abs(l_cov80 - REPRO["L_cov80"]) <= TOL,
         "L_cov90_reproduced": abs(l_cov90 - REPRO["L_cov90"]) <= TOL,
         "weff_mae_reproduced": abs(weff_mae - REPRO["weff_mae_mm"]) <= TOL,
@@ -212,7 +243,12 @@ def main() -> int:
             f.write(json.dumps(r, ensure_ascii=False, sort_keys=True) + "\n")
     metrics = {
         "phase": "phase17a_composite_reporting_layer", "gate17a": gate,
-        "numbers": {"L_mae_mm": l_mae, "L_cov80": l_cov80, "L_cov90": l_cov90,
+        "evaluation": {"dataset_id": V3_240_DATASET_ID, "split": "test", "sample_count": len(test_idx),
+                       "prediction_evidence": str(PREDICTIONS_CSV.relative_to(ROOT)).replace("\\", "/"),
+                       "aggregation": "mean of L/W/D MAE calculated from the same sample predictions",
+                       "dataset_npz_sha256": old.manifest["npz_sha256"],
+                       "model_sha256": {path.name: sha256_file(path) for path in (L_ENSEMBLE_JOBLIB, PHASE10A_OFFICIAL_MODEL, PHASE14D_MODEL)}},
+        "numbers": {"W_mae_mm": w_mae, "D_mae_mm": d_mae, "L_mae_mm": l_mae, "L_cov80": l_cov80, "L_cov90": l_cov90,
                     "weff_mae_mm": weff_mae, "weff_flag_count": int(flags.sum()),
                     "composite_mean_lwd_mm": composite_mean},
         "supersedes": "results/reports/phase14e_weff_area_test_reports.jsonl (L field now composite)",
@@ -223,6 +259,7 @@ def main() -> int:
     write_csv(MANIFEST_CSV, [{
         "phase": metrics["phase"], "verdict": gate["verdict"],
         "n_reports": str(len(reports)), "L_mae_mm": "%.6f" % l_mae,
+        "W_mae_mm": "%.6f" % w_mae, "D_mae_mm": "%.6f" % d_mae,
         "composite_mean_lwd_mm": "%.6f" % composite_mean,
         "comsol_run": "False", "training_performed": "False", "current_baseline_update": "False",
     }])

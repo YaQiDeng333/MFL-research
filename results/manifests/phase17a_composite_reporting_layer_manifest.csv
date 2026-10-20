@@ -1,0 +1,2 @@
+phase,verdict,n_reports,L_mae_mm,W_mae_mm,D_mae_mm,composite_mean_lwd_mm,comsol_run,training_performed,current_baseline_update
+phase17a_composite_reporting_layer,PASS,39,1.626280,2.095925,0.860158,1.527454,False,False,False

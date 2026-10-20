@@ -48,3 +48,29 @@ def test_17a_validate_report_flags_broken_reports() -> None:
     r["width_descriptor"]["width_descriptor_status"] = "primary"
     result = mod.validate_report(r)
     assert result["passed"] is False and result["n_failed"] >= 2
+
+
+def test_composite_metrics_use_all_three_prediction_columns():
+    mod = importlib.import_module("build_phase17a_composite_reporting_layer")
+    truth = np.array([[0.020, 0.010, 0.003], [0.030, 0.012, 0.004]])
+    assert mod.composite_metrics(truth, truth)["composite_mean_lwd_mm"] == 0.0
+    prediction = truth + np.array([0.001, -0.002, 0.003])
+    result = mod.composite_metrics(prediction, truth)
+    assert np.allclose([result["L_mae_mm"], result["W_mae_mm"], result["D_mae_mm"]], [1, 2, 3])
+    assert np.isclose(result["composite_mean_lwd_mm"], 2.0)
+
+
+def test_public_metrics_match_per_sample_prediction_evidence():
+    import csv
+    import json
+    mod = importlib.import_module("build_phase17a_composite_reporting_layer")
+    with (ROOT / "results/metrics/composite_unified_test_predictions.csv").open(encoding="utf-8", newline="") as f:
+        rows = list(csv.DictReader(f))
+    assert len(rows) == 39 and len({r["sample_id"] for r in rows}) == 39
+    assert {r["split"] for r in rows} == {"test"}
+    predictions = np.array([[float(r[f"{axis}_pred_mm"]) for axis in ("L", "W", "D")] for r in rows]) / 1000
+    truth = np.array([[float(r[f"{axis}_true_mm"]) for axis in ("L", "W", "D")] for r in rows]) / 1000
+    computed = mod.composite_metrics(predictions, truth)
+    recorded = json.loads((ROOT / "results/metrics/phase17a_composite_reporting_layer_metrics.json").read_text(encoding="utf-8"))["numbers"]
+    for key, value in computed.items():
+        assert abs(recorded[key] - value) < 1e-10
