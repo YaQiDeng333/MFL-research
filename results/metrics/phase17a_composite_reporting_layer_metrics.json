@@ -1,0 +1,34 @@
+{
+  "boundary": {
+    "comsol_run": false,
+    "current_baseline_update": false,
+    "training_performed": false
+  },
+  "gate17a": {
+    "checks": {
+      "L_cov80_reproduced": true,
+      "L_cov90_reproduced": true,
+      "L_mae_reproduced": true,
+      "composite_mean_reproduced": true,
+      "reports_39_of_39": true,
+      "schema_all_pass": true,
+      "weff_cov_reproduced": true,
+      "weff_flag_count_reproduced": true,
+      "weff_mae_reproduced": true
+    },
+    "current_baseline_update": false,
+    "rationale": "composite reporting layer reproduces every promoted number bit-exactly",
+    "verdict": "PASS"
+  },
+  "numbers": {
+    "L_cov80": 0.9743589743589743,
+    "L_cov90": 1.0,
+    "L_mae_mm": 1.6262799071882357,
+    "composite_mean_lwd_mm": 1.5150933023960784,
+    "weff_flag_count": 10,
+    "weff_mae_mm": 1.4443508705553334
+  },
+  "phase": "phase17a_composite_reporting_layer",
+  "reports_jsonl": "results/reports/phase17a_composite_test_reports.jsonl",
+  "supersedes": "results/reports/phase14e_weff_area_test_reports.jsonl (L field now composite)"
+}

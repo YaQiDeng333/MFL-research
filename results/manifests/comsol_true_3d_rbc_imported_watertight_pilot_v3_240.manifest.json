@@ -1,0 +1,67 @@
+{
+  "allowed_use": [
+    "schema_validation",
+    "explicit_pilot_training_gate"
+  ],
+  "auto_discovery_allowed": false,
+  "axes": [
+    "Bx",
+    "By",
+    "Bz"
+  ],
+  "baseline_ready": false,
+  "comsol_commit": "6f020d34807050508c5d401730f071234d4da26a",
+  "curvature_counts": {
+    "LD_dominant": 46,
+    "WD_dominant": 50,
+    "boxy": 47,
+    "round": 49,
+    "sharp": 48
+  },
+  "dataset_id": "comsol_true_3d_rbc_imported_watertight_pilot_v3_240",
+  "dataset_role": "assembled",
+  "exact_piao_rbc": false,
+  "forbidden_use": [
+    "automatic_mainline_training",
+    "baseline_update",
+    "current_baseline_replacement",
+    "latest_newest_auto_discovery",
+    "direct_training_without_manifest_gate"
+  ],
+  "generated_at": "2026-05-25T08:08:23",
+  "generator_script": "scripts/generate_mfl_true_3d_rbc_dataset_240_topup_pack.py",
+  "geometry_method": "imported_watertight_mesh_solid",
+  "latest_newest_discovery_allowed": false,
+  "manifest_path": "results/manifests/comsol_true_3d_rbc_imported_watertight_pilot_v3_240.manifest.json",
+  "merge_policy": "sample_id_dedupe_strict",
+  "n_samples": 240,
+  "notes": "20.76 metadata only; NPZ is generated data and is not committed.",
+  "npz_path": "data/comsol_mfl/prepared/experimental/true_3d_rbc_pilot/comsol_true_3d_rbc_imported_watertight_pilot_v3_240.npz",
+  "npz_sha256": "6cfd6c4dd32c474dbe4843ac520f541123a54a8f0082a94d3e28d0c8cd196817",
+  "pinn_commit": "6b51a80619783051034636ed8962b8feb4f2d586",
+  "rbc_style_approximation": true,
+  "route": "true_3d_piao_style",
+  "scan_line_y": [
+    -0.001,
+    0.0,
+    0.001
+  ],
+  "schema_version": "true3d_profile_v1_piao_rbc",
+  "sensor_x_count": 201,
+  "sensor_z_m": 0.008,
+  "source_dataset_ids": [
+    "comsol_true_3d_rbc_imported_watertight_pilot_v2_120",
+    "comsol_true_3d_rbc_imported_watertight_pilot_v3_topup_20_76"
+  ],
+  "split_counts": {
+    "test": 39,
+    "train": 162,
+    "val": 39
+  },
+  "stage": "20.76",
+  "status": "pilot_generated",
+  "train_ready_candidate": true,
+  "validation_pass": true,
+  "validation_script": "scripts/validate_true_3d_rbc_dataset_240_pack.py",
+  "publication_note": "路径改为仓库相对路径；数据未随仓库提供，原数据哈希保持不变。"
+}

@@ -1,0 +1,7 @@
+# 发布验证环境的直接依赖版本；PyTorch 使用通用版本号。
+numpy==2.2.6
+scipy==1.15.3
+scikit-learn==1.7.2
+joblib==1.5.3
+torch==2.11.0
+pytest==9.1.1

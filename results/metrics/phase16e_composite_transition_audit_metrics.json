@@ -1,0 +1,43 @@
+{
+  "artifacts": {
+    "l_head": "results/models/phase16b_l_head_ensemble_descriptor.joblib",
+    "official_wd": "results/models/phase10a_w_residual_corrected_candidate.joblib"
+  },
+  "boundary": {
+    "comsol_run": false,
+    "reload_based_verification_only": true,
+    "training_performed": false
+  },
+  "checks": {
+    "L_mae_le_1p70": true,
+    "composite_mean_le_1p55": true,
+    "cov80_ge_0p80": true,
+    "cov90_ge_0p90": true,
+    "no_16c_round2_in_L_head": true,
+    "official_wm_reload_valid": true,
+    "paired_gain_ge_0p20": true,
+    "repro_L_ens_mean_exact": true,
+    "repro_cov80_exact": true,
+    "repro_cov90_exact": true,
+    "test_frozen_final_only": true,
+    "trained_on_162_plus_90_only": true,
+    "w_line_stop_conditions_intact": true
+  },
+  "current_baseline_patch_applied": true,
+  "numbers": {
+    "L_cov80": 0.9743589743589743,
+    "L_cov90": 1.0,
+    "L_ens_mean_test_mae_mm": 1.6262799071882357,
+    "L_width80_mm": 9.172047624937314,
+    "L_width90_mm": 11.591756155438892,
+    "composite_mean_lwd_mm": 1.5150933023960784,
+    "official_live_test_mae_mm": {
+      "D_m": 0.8601579644854588,
+      "L_m": 2.0005228062972233,
+      "W_m": 2.0959252102348276
+    },
+    "paired_L_gain_mm": 0.374242899108988
+  },
+  "phase": "phase16e_composite_transition_audit",
+  "verdict": "PASS"
+}

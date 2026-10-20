@@ -1,0 +1,23 @@
+20.85 formal true 3D RBC benchmark rerun summary
+
+dataset_id: comsol_true_3d_rbc_imported_watertight_pilot_v3_240
+baseline_update: false
+COMSOL_run: false
+data_or_NPZ_modified: false
+model_family: 20.77 small Conv1D encoder + MLP six-parameter head
+loss: 20.77 weighted SmoothL1, dimension weights=1.0, curvature weights=0.5
+selection: validation-only best checkpoint per seed, validation-only seed selection
+seeds_run: [42, 123, 2026]
+selected_seed: 42
+train_normalized_mae: 0.646111
+val_normalized_mae: 0.748694
+test_normalized_mae: 0.678014
+test_LWD_mae_mm: L=1.891892, W=2.185760, D=0.800231
+test_wMAE_auxiliary: 0.201076
+test_wLD_wWD_wLW_auxiliary: 0.209439, 0.204469, 0.189319
+test_profile_depth_rmse_m: 0.000387737
+test_er_like_profile_error: 0.340544
+test_projected_mask_iou_dice: 0.750650, 0.847727
+test_max_depth_error_m: 0.000800231
+test_volume_proxy_rel_error: 0.576456
+Boundary: this is a formal benchmark candidate rerun, not a baseline replacement.

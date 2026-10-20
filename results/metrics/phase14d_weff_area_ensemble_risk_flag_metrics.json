@@ -1,0 +1,220 @@
+{
+  "boundary": {
+    "bz_only": false,
+    "comsol_run": false,
+    "current_baseline_update": false,
+    "old_v3_test_used_for_training_or_selection": false,
+    "phase11a_train_side_only": true,
+    "phase13c_samples_added_to_training_or_calibration": false,
+    "real_data_used": false,
+    "test_threshold_tuning": false,
+    "uses_mixture_routing": false,
+    "uses_predicted_family": false,
+    "uses_true_family": false,
+    "w_m_point_baseline_replaced": false,
+    "w_m_residual_or_stacking_trained": false
+  },
+  "conformal": {
+    "calibration_split": "original_v3_240_val",
+    "ensemble_std_scaled_conformal": {
+      "80": {
+        "coverage": 0.8461538461538461,
+        "mean_width_mm": 5.370187834868315,
+        "median_width_mm": 5.070024291772547,
+        "quantile_ratio": 21.124774581881002
+      },
+      "90": {
+        "coverage": 0.8974358974358975,
+        "mean_width_mm": 6.380009961230553,
+        "median_width_mm": 6.023402994428582,
+        "quantile_ratio": 25.097124421990678
+      }
+    },
+    "n_calibration": 39,
+    "plain_split_conformal": {
+      "80": {
+        "coverage": 0.8974358974358975,
+        "mean_width_mm": 5.857407941992091,
+        "median_width_mm": 5.857407941992093,
+        "radius_mm": 2.9287039709960463
+      },
+      "90": {
+        "coverage": 0.9487179487179487,
+        "mean_width_mm": 7.495843234907217,
+        "median_width_mm": 7.495843234907215,
+        "radius_mm": 3.7479216174536076
+      }
+    },
+    "primary_method": "plain_split_conformal"
+  },
+  "dataset": {
+    "feature_count": 180,
+    "feature_schema": "all_141_plus_fixed_signal_width_features",
+    "phase11a_success_count": 90,
+    "target_name": "W_eff_area",
+    "v3_dataset_id": "comsol_true_3d_rbc_imported_watertight_pilot_v3_240",
+    "v3_split_counts": {
+      "test": 39,
+      "train": 162,
+      "val": 39
+    }
+  },
+  "ensemble": {
+    "member_spec": "Phase14a EXTRA_TREES_PARAMS with per-member random_state",
+    "n_members": 12,
+    "point_estimate": "ensemble_mean",
+    "risk_score": "ensemble_std",
+    "seeds": [
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111,
+      112
+    ]
+  },
+  "gate14d": {
+    "baseline_update_allowed": false,
+    "checks": {
+      "best_risk_auc": 0.8137931034482758,
+      "best_risk_auc_ge_0p60": true,
+      "best_risk_auc_ge_0p70": true,
+      "coverage_80_ge_0p80": true,
+      "coverage_90_ge_0p90": true,
+      "flag_delta_ge_0p30_mm": true,
+      "flagged_above_unflagged": true,
+      "mae_le_1p50": true,
+      "reproduction_valid": true
+    },
+    "descriptor_reportable": true,
+    "rationale": "descriptor MAE/coverage hold and the ensemble-std flag separates risky samples (AUC >= 0.70, flag delta >= 0.30 mm)",
+    "risk_flag_status": "effective",
+    "thresholds": {
+      "auc_partial": 0.6,
+      "auc_pass": 0.7,
+      "coverage_80": 0.8,
+      "coverage_90": 0.9,
+      "flag_delta_mm": 0.3,
+      "mae_mm": 1.5
+    },
+    "verdict": "PASS",
+    "w_m_point_baseline_replaced": false
+  },
+  "model_artifact": "results\\models\\phase14d_weff_area_ensemble_descriptor.joblib",
+  "nuisance_stratification": {
+    "high_nuisance_policy": {
+      "train_abs_deviation_q75": 0.27879995107650757,
+      "train_median_wWD": 0.8787999749183655
+    },
+    "high_nuisance_test_count": 11
+  },
+  "phase": "phase14d_weff_area_ensemble_risk_flag",
+  "phase14c_reproduction": {
+    "acceptable_tolerance_mm": 0.005,
+    "audit_valid": true,
+    "checks": {
+      "single_global_high_nuisance_mae_mm": {
+        "abs_diff_mm": 4.440892098500626e-16,
+        "phase14c_stored_mm": 2.0003818810208074,
+        "recomputed_mm": 2.000381881020807,
+        "status": "exact"
+      },
+      "single_global_test_mae_mm": {
+        "abs_diff_mm": 2.220446049250313e-16,
+        "phase14c_stored_mm": 1.4473831261747008,
+        "recomputed_mm": 1.447383126174701,
+        "status": "exact"
+      }
+    },
+    "strict_tolerance_mm": 1e-06
+  },
+  "point_estimate": {
+    "ensemble_mean_test_mae_mm": 1.4443508705553338,
+    "ensemble_mean_validation_mae_mm": 1.916225565226101,
+    "ensemble_minus_single_mm": -0.0030322556193671524,
+    "high_nuisance_test_count": 11,
+    "high_nuisance_test_mae_mm": 2.0389152575602223,
+    "per_true_family_test_mae_mm": {
+      "LD_dominant": 1.1883107978268335,
+      "WD_dominant": 1.7203685939885025,
+      "boxy": 0.9077246464346066,
+      "round": 1.5223367971469188,
+      "sharp": 1.8159352393647168
+    },
+    "phase14c_single_test_mae_mm": 1.447383126174701
+  },
+  "purpose": "validate an ensemble-std risk flag for the Phase14c global W_eff_area descriptor",
+  "reporting_layer_recommendation": {
+    "descriptor_fields": [
+      "W_eff_area_pred_m (ensemble mean)",
+      "W_eff_area_interval_80_m",
+      "W_eff_area_interval_90_m",
+      "ensemble_std_risk_flag"
+    ],
+    "descriptor_reportable": true,
+    "note": "W_m remains the official nominal-width output; W_eff_area stays report-only",
+    "risk_flag_status": "effective"
+  },
+  "risk_flag": {
+    "error_enrichment_ratio": 1.8164754521397777,
+    "flag_source": "ensemble_std, threshold = val q0.75",
+    "flagged_mae_mm": 2.1694481220835655,
+    "flagged_minus_unflagged_mm": 0.975130786537967,
+    "high_nuisance_auc": 0.538961038961039,
+    "high_nuisance_precision_at_flag": 0.4,
+    "high_nuisance_recall_at_flag": 0.36363636363636365,
+    "large_width_error_auc": 0.8137931034482758,
+    "spearman_std_vs_abs_error": 0.4251012145748988,
+    "test_flag_per_sample": [
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
+    "test_flagged_count": 10,
+    "test_flagged_fraction": 0.2564102564102564,
+    "threshold_mm": 0.14812620145684186,
+    "unflagged_mae_mm": 1.1943173355455985
+  }
+}

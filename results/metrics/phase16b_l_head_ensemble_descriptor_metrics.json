@@ -1,0 +1,66 @@
+{
+  "boundary": {
+    "comsol_run": false,
+    "current_baseline_update": false,
+    "phase11a_train_side_only": true,
+    "probe_samples_in_training": false,
+    "test_used_for_selection_or_calibration": false
+  },
+  "conformal_val_calibrated": {
+    "80": {
+      "coverage": 0.9743589743589743,
+      "mean_width_mm": 9.172047624937312,
+      "median_width_mm": 9.172047624937314,
+      "radius_mm": 4.586023812468657
+    },
+    "90": {
+      "coverage": 1.0,
+      "mean_width_mm": 11.59175615543889,
+      "median_width_mm": 11.591756155438892,
+      "radius_mm": 5.795878077719446
+    }
+  },
+  "ensemble": {
+    "n_members": 12,
+    "seeds": [
+      42,
+      101,
+      102,
+      103,
+      104,
+      105,
+      106,
+      107,
+      108,
+      109,
+      110,
+      111
+    ],
+    "spec": "ExtraTrees-600 mf0.75, 11a 210-dim feature world, train 162+90"
+  },
+  "gate16b": {
+    "checks": {
+      "L_mae_le_1p70": true,
+      "cov80_ge_0p80": true,
+      "cov90_ge_0p90": true
+    },
+    "thresholds": {
+      "L_mae_mm": 1.7,
+      "cov80": 0.8,
+      "cov90": 0.9
+    },
+    "verdict": "PASS"
+  },
+  "model_artifact": "results\\models\\phase16b_l_head_ensemble_descriptor.joblib",
+  "phase": "phase16b_l_head_ensemble_descriptor",
+  "point_estimate": {
+    "ensemble_mean_test_mae_mm": 1.6262799071882357,
+    "ensemble_mean_val_mae_mm": 2.4077668997393866,
+    "official_stored_L_mae_mm": 1.987,
+    "phase16a_12seed_mean_of_maes_mm": 1.6276
+  },
+  "risk_signal": {
+    "large_error_auc": 0.6758620689655173,
+    "spearman_std_vs_abs_error": 0.22834008097165992
+  }
+}

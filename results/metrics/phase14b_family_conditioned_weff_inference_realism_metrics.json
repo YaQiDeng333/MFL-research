@@ -1,0 +1,284 @@
+{
+  "boundary": {
+    "bz_only": false,
+    "comsol_run": false,
+    "current_baseline_update": false,
+    "old_v3_test_used_for_training_or_selection": false,
+    "phase11a_train_side_only": true,
+    "phase13c_samples_added_to_training_or_calibration": false,
+    "real_data_used": false,
+    "test_true_family_used_for_routing": "oracle_family_routing only (declared upper bound)",
+    "w_m_baseline_restored": false
+  },
+  "dataset": {
+    "feature_count": 180,
+    "feature_schema": "all_141_plus_fixed_signal_width_features",
+    "phase11a_success_count": 90,
+    "target_name": "W_eff_area",
+    "train_side_total": 252,
+    "v3_dataset_id": "comsol_true_3d_rbc_imported_watertight_pilot_v3_240",
+    "v3_split_counts": {
+      "test": 39,
+      "train": 162,
+      "val": 39
+    }
+  },
+  "family_classifier": {
+    "candidates_val_selection": [
+      {
+        "name": "et_mf050",
+        "val_accuracy": 0.358974358974359,
+        "val_log_loss": 1.505986294335592
+      },
+      {
+        "name": "et_mf075",
+        "val_accuracy": 0.41025641025641024,
+        "val_log_loss": 1.4526940720504156
+      },
+      {
+        "name": "et_mf100",
+        "val_accuracy": 0.3333333333333333,
+        "val_log_loss": 1.5221235654972907
+      },
+      {
+        "name": "et_ne720_mf075",
+        "val_accuracy": 0.41025641025641024,
+        "val_log_loss": 1.516722798080166
+      },
+      {
+        "name": "hist_gradient_boosting",
+        "val_accuracy": 0.38461538461538464,
+        "val_log_loss": 2.2348166780702337
+      }
+    ],
+    "classes": [
+      "LD_dominant",
+      "WD_dominant",
+      "boxy",
+      "round",
+      "sharp"
+    ],
+    "selected": "et_mf075",
+    "selection_split": "original_v3_240_val",
+    "test_accuracy": 0.3076923076923077,
+    "test_confusion_matrix_true_rows": {
+      "LD_dominant": {
+        "LD_dominant": 0,
+        "WD_dominant": 6,
+        "boxy": 1,
+        "round": 1,
+        "sharp": 0
+      },
+      "WD_dominant": {
+        "LD_dominant": 0,
+        "WD_dominant": 5,
+        "boxy": 2,
+        "round": 1,
+        "sharp": 0
+      },
+      "boxy": {
+        "LD_dominant": 0,
+        "WD_dominant": 1,
+        "boxy": 4,
+        "round": 1,
+        "sharp": 1
+      },
+      "round": {
+        "LD_dominant": 0,
+        "WD_dominant": 2,
+        "boxy": 3,
+        "round": 2,
+        "sharp": 1
+      },
+      "sharp": {
+        "LD_dominant": 0,
+        "WD_dominant": 2,
+        "boxy": 5,
+        "round": 0,
+        "sharp": 1
+      }
+    },
+    "test_per_class_recall": {
+      "LD_dominant": 0.0,
+      "WD_dominant": 0.625,
+      "boxy": 0.5714285714285714,
+      "round": 0.25,
+      "sharp": 0.125
+    },
+    "train_side": "original_v3_train_plus_phase11a_train_side",
+    "uses_test_labels_for_fit_or_selection": false,
+    "val_accuracy": 0.41025641025641024
+  },
+  "gate14b": {
+    "baseline_update_allowed": false,
+    "per_routing_conditions": {
+      "mixture_of_family_heads": {
+        "high_nuisance_advantage_vs_W_m_control_mm": -0.3618012041562171,
+        "meets_high_nuisance_advantage_0p50": false,
+        "meets_oracle_gap_0p25": false,
+        "meets_partial_mae_1p50": false,
+        "meets_pass_mae_1p35": false,
+        "oracle_gap_mm": 0.5390304558769596,
+        "pass_all": false,
+        "test_mae_mm": 1.6517024101506252
+      },
+      "signal_predicted_family_routing": {
+        "high_nuisance_advantage_vs_W_m_control_mm": -0.74841187828447,
+        "meets_high_nuisance_advantage_0p50": false,
+        "meets_oracle_gap_0p25": false,
+        "meets_partial_mae_1p50": false,
+        "meets_pass_mae_1p35": false,
+        "oracle_gap_mm": 0.8486022361807364,
+        "pass_all": false,
+        "test_mae_mm": 1.961274190454402
+      }
+    },
+    "point_baseline_candidate_allowed": false,
+    "rationale": "all non-oracle family routings exceed 1.50 mm; Phase14a result depends on the true-family oracle",
+    "reporting_descriptor_allowed": false,
+    "thresholds": {
+      "high_nuisance_advantage_mm": 0.5,
+      "oracle_gap_mm": 0.25,
+      "partial_test_mae_mm": 1.5,
+      "pass_test_mae_mm": 1.35
+    },
+    "verdict": "FAIL"
+  },
+  "nuisance_stratification": {
+    "high_nuisance_policy": {
+      "train_abs_deviation_q75": 0.27879995107650757,
+      "train_median_wWD": 0.8787999749183655
+    },
+    "high_nuisance_test_count": 11
+  },
+  "oracle_dependence": {
+    "below_1p50_non_oracle": {
+      "global_W_eff_area_head": true,
+      "mixture_of_family_heads": false,
+      "signal_predicted_family_routing": false
+    },
+    "better_than_w_m_control": {
+      "global_W_eff_area_head": 0.6728805317108255,
+      "mixture_of_family_heads": 0.46856124773490127,
+      "oracle_family_routing": 1.007591703611861,
+      "signal_predicted_family_routing": 0.15898946743112452
+    },
+    "global_head_gap_mm": 0.3347111719010354,
+    "mixture_routing_gap_mm": 0.5390304558769596,
+    "oracle_test_mae_mm": 1.1126719542736656,
+    "predicted_routing_gap_mm": 0.8486022361807364
+  },
+  "phase": "phase14b_family_conditioned_weff_inference_realism",
+  "phase14a_reproduction": {
+    "acceptable_tolerance_mm": 0.005,
+    "audit_valid": true,
+    "checks": {
+      "global_test_mae_mm": {
+        "abs_diff_mm": 4.440892098500626e-16,
+        "phase14a_stored_mm": 1.4473831261747014,
+        "recomputed_mm": 1.447383126174701,
+        "status": "exact"
+      },
+      "oracle_high_nuisance_mae_mm": {
+        "abs_diff_mm": 1.3322676295501878e-15,
+        "phase14a_stored_mm": 1.285535468485117,
+        "recomputed_mm": 1.2855354684851157,
+        "status": "exact"
+      },
+      "oracle_test_mae_mm": {
+        "abs_diff_mm": 6.661338147750939e-16,
+        "phase14a_stored_mm": 1.1126719542736663,
+        "recomputed_mm": 1.1126719542736656,
+        "status": "exact"
+      },
+      "oracle_val_mae_mm": {
+        "abs_diff_mm": 4.440892098500626e-16,
+        "phase14a_stored_mm": 1.6306288908759703,
+        "recomputed_mm": 1.6306288908759707,
+        "status": "exact"
+      },
+      "w_m_control_high_nuisance_mae_mm": {
+        "abs_diff_mm": 0.0,
+        "phase14a_stored_mm": 1.9869704655550344,
+        "recomputed_mm": 1.9869704655550344,
+        "status": "exact"
+      },
+      "w_m_control_test_mae_mm": {
+        "abs_diff_mm": 0.0,
+        "phase14a_stored_mm": 2.1202636578855265,
+        "recomputed_mm": 2.1202636578855265,
+        "status": "exact"
+      }
+    },
+    "strict_tolerance_mm": 1e-06
+  },
+  "purpose": "check whether Phase14a family_conditioned_heads__W_eff_area depends on a true template_family oracle at inference time",
+  "routing_evaluations": {
+    "global_W_eff_area_head": {
+      "high_nuisance_count": 11,
+      "high_nuisance_mae_mm": 2.000381881020808,
+      "per_true_family_mae_mm": {
+        "LD_dominant": 1.2031189709787802,
+        "WD_dominant": 1.75630143959308,
+        "boxy": 0.9751039218399082,
+        "round": 1.50950531857208,
+        "sharp": 1.733851079347807
+      },
+      "routing_name": "global_W_eff_area_head",
+      "test_mae_mm": 1.447383126174701,
+      "uses_test_true_family": false,
+      "validation_mae_mm": 1.898569951714257
+    },
+    "mixture_of_family_heads": {
+      "high_nuisance_count": 11,
+      "high_nuisance_mae_mm": 2.3487716697112515,
+      "per_true_family_mae_mm": {
+        "LD_dominant": 1.614174561069587,
+        "WD_dominant": 2.3264915295749518,
+        "boxy": 1.0626732239284506,
+        "round": 1.4417220635832741,
+        "sharp": 1.7398220243190918
+      },
+      "routing_name": "mixture_of_family_heads",
+      "test_mae_mm": 1.6517024101506252,
+      "uses_test_true_family": false,
+      "validation_mae_mm": 1.8226450840185033
+    },
+    "oracle_family_routing": {
+      "high_nuisance_count": 11,
+      "high_nuisance_mae_mm": 1.2855354684851157,
+      "per_true_family_mae_mm": {
+        "LD_dominant": 1.1853011451039115,
+        "WD_dominant": 1.4349000501439666,
+        "boxy": 1.1117122717845584,
+        "round": 1.0975731493767884,
+        "sharp": 0.7337531946479638
+      },
+      "routing_name": "oracle_family_routing",
+      "test_mae_mm": 1.1126719542736656,
+      "uses_test_true_family": true,
+      "validation_mae_mm": 1.6306288908759707
+    },
+    "signal_predicted_family_routing": {
+      "high_nuisance_count": 11,
+      "high_nuisance_mae_mm": 2.7353823438395044,
+      "per_true_family_mae_mm": {
+        "LD_dominant": 1.638675360708687,
+        "WD_dominant": 2.183181996745579,
+        "boxy": 1.4773620911767313,
+        "round": 1.7023449598901643,
+        "sharp": 2.7443175313411414
+      },
+      "routing_name": "signal_predicted_family_routing",
+      "test_mae_mm": 1.961274190454402,
+      "uses_test_true_family": false,
+      "validation_mae_mm": 1.8989013758974227
+    }
+  },
+  "w_m_control": {
+    "candidate": "plain_W_m_head",
+    "high_nuisance_mae_mm": 1.9869704655550344,
+    "note": "nominal W_m reference recomputed with the exact Phase14a control head; not a baseline restoration",
+    "test_mae_mm": 2.1202636578855265
+  }
+}
